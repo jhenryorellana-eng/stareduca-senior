@@ -35,11 +35,11 @@ export async function GET(
       id: comment.id,
       content: comment.content,
       createdAt: comment.created_at,
-      author: comment.parent ? {
-        id: comment.parent.id,
-        firstName: comment.parent.first_name,
-        lastName: comment.parent.last_name,
-        avatarUrl: comment.parent.avatar_url,
+      author: comment.parent?.[0] ? {
+        id: comment.parent[0].id,
+        firstName: comment.parent[0].first_name,
+        lastName: comment.parent[0].last_name,
+        avatarUrl: comment.parent[0].avatar_url,
       } : null,
     })) || [];
 
@@ -96,8 +96,8 @@ export async function POST(
 
     // Only notify if the commenter is not the post author
     if (post && post.parent_id !== auth.sub) {
-      const commenterName = comment.parent
-        ? `${comment.parent.first_name} ${comment.parent.last_name}`
+      const commenterName = comment.parent?.[0]
+        ? `${comment.parent[0].first_name} ${comment.parent[0].last_name}`
         : 'Alguien';
 
       await supabaseAdmin.from('notifications').insert({
@@ -114,11 +114,11 @@ export async function POST(
         id: comment.id,
         content: comment.content,
         createdAt: comment.created_at,
-        author: comment.parent ? {
-          id: comment.parent.id,
-          firstName: comment.parent.first_name,
-          lastName: comment.parent.last_name,
-          avatarUrl: comment.parent.avatar_url,
+        author: comment.parent?.[0] ? {
+          id: comment.parent[0].id,
+          firstName: comment.parent[0].first_name,
+          lastName: comment.parent[0].last_name,
+          avatarUrl: comment.parent[0].avatar_url,
         } : null,
       },
     });

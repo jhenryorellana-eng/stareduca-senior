@@ -57,11 +57,11 @@ export async function GET(request: NextRequest) {
       reactionCount: post.reaction_count,
       commentCount: post.comment_count,
       createdAt: post.created_at,
-      author: post.parent ? {
-        id: post.parent.id,
-        firstName: post.parent.first_name,
-        lastName: post.parent.last_name,
-        avatarUrl: post.parent.avatar_url,
+      author: post.parent?.[0] ? {
+        id: post.parent[0].id,
+        firstName: post.parent[0].first_name,
+        lastName: post.parent[0].last_name,
+        avatarUrl: post.parent[0].avatar_url,
       } : null,
       hasReacted: reactionSet.has(post.id),
     })) || [];
@@ -120,11 +120,11 @@ export async function POST(request: NextRequest) {
         reactionCount: post.reaction_count,
         commentCount: post.comment_count,
         createdAt: post.created_at,
-        author: post.parent ? {
-          id: post.parent.id,
-          firstName: post.parent.first_name,
-          lastName: post.parent.last_name,
-          avatarUrl: post.parent.avatar_url,
+        author: post.parent?.[0] ? {
+          id: post.parent[0].id,
+          firstName: post.parent[0].first_name,
+          lastName: post.parent[0].last_name,
+          avatarUrl: post.parent[0].avatar_url,
         } : null,
         hasReacted: false,
       },

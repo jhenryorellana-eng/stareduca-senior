@@ -31,7 +31,7 @@ export async function createToken(payload: Omit<TokenPayload, 'iat' | 'exp'>): P
 export async function verifyToken(token: string): Promise<TokenPayload | null> {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
-    return payload as TokenPayload;
+    return payload as unknown as TokenPayload;
   } catch {
     return null;
   }

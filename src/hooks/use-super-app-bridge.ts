@@ -75,8 +75,8 @@ export function useSuperAppBridge(options: UseSuperAppBridgeOptions = {}) {
 
     if (inWebView) {
       // Register listener for messages from super app
-      window.receiveFromApp = (message: BridgeMessage) => {
-        options.onMessage?.(message);
+      window.receiveFromApp = (message: SuperAppMessage) => {
+        options.onMessage?.(message as BridgeMessage);
       };
 
       // Notify super app that bridge is ready
