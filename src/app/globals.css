@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Prevent overscroll bounce on iOS */
+html,
+body {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar but allow scrolling */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Safe area padding for notched devices */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Gradient backgrounds */
+.gradient-header {
+  background: linear-gradient(180deg, #090653 0%, #DC79A8 100%);
+}
+
+.gradient-primary {
+  background: linear-gradient(135deg, #d70fd7 0%, #9c0cad 100%);
+}
+
+.gradient-inicio {
+  background: linear-gradient(135deg, #8655f6 0%, #DC79A8 100%);
+}
+
+.gradient-progress {
+  background: linear-gradient(90deg, #DC79A8 0%, #8B5CF6 100%);
+}
+
+.gradient-avisos {
+  background: linear-gradient(180deg, #9213ec 0%, #6a0dad 100%);
+}
+
+/* Glass effect */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.glass-white {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* iOS-style blur for bottom nav */
+.blur-nav {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* Custom focus styles */
+input:focus,
+textarea:focus,
+button:focus {
+  outline: none;
+}
+
+/* Prevent text selection on interactive elements */
+button,
+a,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Animation utilities */
+@layer utilities {
+  .animate-in {
+    animation: fadeInUp 0.4s ease-out;
+  }
+
+  .slide-in {
+    animation: slideUp 0.3s ease-out;
+  }
+}
+
+/* Line clamp utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Video player overlay gradient */
+.video-overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+}
+
+/* Post type colors */
+.post-type-experience {
+  background-color: #e0f2f1;
+  color: #00695c;
+}
+
+.post-type-question {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.post-type-advice {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
