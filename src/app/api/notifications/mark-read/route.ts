@@ -8,10 +8,17 @@ export async function POST(request: NextRequest) {
     return unauthorizedResponse();
   }
 
-  const { notificationIds } = await request.json();
+  let notificationIds: string[] | undefined;
 
   try {
-    if (notificationIds && Array.isArray(notificationIds)) {
+    const body = await request.json();
+    notificationIds = body.notificationIds;
+  } catch {
+    // No body sent, will mark all as read
+  }
+
+  try {
+    if (notificationIds && Array.isArray(notificationIds) && notificationIds.length > 0) {
       // Mark specific notifications as read
       await supabaseAdmin
         .from('notifications')

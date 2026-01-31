@@ -26,6 +26,7 @@ const typeColors = {
 };
 
 export default function AvisosPage() {
+  const router = useRouter();
   const { token } = useAuthStore();
   const { setUnreadNotifications } = useUserStore();
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -58,15 +59,62 @@ export default function AvisosPage() {
     if (!token) return;
 
     try {
-      await fetch('/api/notifications/mark-read', {
+      const response = await fetch('/api/notifications/mark-read', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
       });
 
-      setNotifications(notifications.map((n) => ({ ...n, isRead: true })));
-      setUnreadNotifications(0);
+      if (response.ok) {
+        setNotifications(notifications.map((n) => ({ ...n, isRead: true })));
+        setUnreadNotifications(0);
+      }
     } catch (error) {
       console.error('Error:', error);
+    }
+  }
+
+  async function markAsRead(notificationId: string) {
+    if (!token) return;
+
+    try {
+      const response = await fetch('/api/notifications/mark-read', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ notificationIds: [notificationId] }),
+      });
+
+      if (response.ok) {
+        setNotifications(notifications.map((n) =>
+          n.id === notificationId ? { ...n, isRead: true } : n
+        ));
+        const newUnreadCount = notifications.filter((n) => !n.isRead && n.id !== notificationId).length;
+        setUnreadNotifications(newUnreadCount);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  function handleNotificationClick(notification: Notification) {
+    // Mark as read if not already
+    if (!notification.isRead) {
+      markAsRead(notification.id);
+    }
+
+    // Navigate based on type
+    const data = notification.data as Record<string, string> | null;
+
+    if (notification.type === 'comment' || notification.type === 'reaction') {
+      router.push('/comunidad');
+    } else if (notification.type === 'resource' && data?.courseId) {
+      router.push(`/aprender/${data.courseId}`);
     }
   }
 
@@ -104,7 +152,7 @@ export default function AvisosPage() {
           </button>
         </div>
         <h1 className="text-white text-3xl font-bold">Notificaciones</h1>
-        <p className="text-white/70 text-sm mt-1">Tu camino de transformación personal</p>
+        <p className="text-white/70 text-sm mt-1">Tu camino de transformacion personal</p>
       </header>
 
       {/* Content */}
@@ -117,7 +165,7 @@ export default function AvisosPage() {
               className="text-primary-avisos text-sm font-semibold flex items-center gap-2"
             >
               <CheckCheck size={16} />
-              Marcar todo como leído ({unreadCount})
+              Marcar todo como leido ({unreadCount})
             </button>
           </div>
         )}
@@ -143,17 +191,29 @@ export default function AvisosPage() {
           <div className="pb-24">
             {/* Today */}
             {todayNotifications.length > 0 && (
-              <NotificationSection title="Hoy" notifications={todayNotifications} />
+              <NotificationSection
+                title="Hoy"
+                notifications={todayNotifications}
+                onNotificationClick={handleNotificationClick}
+              />
             )}
 
             {/* This week */}
             {thisWeekNotifications.length > 0 && (
-              <NotificationSection title="Esta semana" notifications={thisWeekNotifications} />
+              <NotificationSection
+                title="Esta semana"
+                notifications={thisWeekNotifications}
+                onNotificationClick={handleNotificationClick}
+              />
             )}
 
             {/* Older */}
             {olderNotifications.length > 0 && (
-              <NotificationSection title="Anteriores" notifications={olderNotifications} />
+              <NotificationSection
+                title="Anteriores"
+                notifications={olderNotifications}
+                onNotificationClick={handleNotificationClick}
+              />
             )}
           </div>
         )}
@@ -165,9 +225,11 @@ export default function AvisosPage() {
 function NotificationSection({
   title,
   notifications,
+  onNotificationClick,
 }: {
   title: string;
   notifications: Notification[];
+  onNotificationClick: (notification: Notification) => void;
 }) {
   return (
     <div>
@@ -176,35 +238,31 @@ function NotificationSection({
       </h2>
       <div className="space-y-1">
         {notifications.map((notification) => (
-          <NotificationItem key={notification.id} notification={notification} />
+          <NotificationItem
+            key={notification.id}
+            notification={notification}
+            onClick={() => onNotificationClick(notification)}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-function NotificationItem({ notification }: { notification: Notification }) {
-  const router = useRouter();
+function NotificationItem({
+  notification,
+  onClick,
+}: {
+  notification: Notification;
+  onClick: () => void;
+}) {
   const Icon = typeIcons[notification.type as keyof typeof typeIcons] || Bell;
   const colorClass = typeColors[notification.type as keyof typeof typeColors] || typeColors.system;
-
-  function handleClick() {
-    const data = notification.data as Record<string, string> | null;
-
-    if (notification.type === 'comment' || notification.type === 'reaction') {
-      // Navigate to community page
-      router.push('/comunidad');
-    } else if (notification.type === 'resource' && data?.courseId) {
-      // Navigate to course page
-      router.push(`/aprender/${data.courseId}`);
-    }
-  }
-
   const isClickable = ['comment', 'reaction', 'resource'].includes(notification.type);
 
   return (
     <div
-      onClick={handleClick}
+      onClick={onClick}
       className={cn(
         'flex items-start gap-3 px-6 py-4 transition-colors',
         !notification.isRead && 'bg-primary-avisos/5',
