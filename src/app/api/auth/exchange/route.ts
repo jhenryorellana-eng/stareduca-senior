@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { createToken } from '@/lib/auth';
 
-const HUB_CENTRAL_API = process.env.HUB_CENTRAL_API_URL || 'https://api.starbizacademy.com';
+const HUB_CENTRAL_API = process.env.HUB_CENTRAL_API_URL || 'https://app.starbizacademy.com';
 const MINI_APP_ID = process.env.MINI_APP_ID || 'stareduca_senior';
 
 export async function POST(request: NextRequest) {
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       };
     } else {
       // Exchange code with Hub Central
-      const hubResponse = await fetch(`${HUB_CENTRAL_API}/v1/auth/exchange`, {
+      const hubResponse = await fetch(`${HUB_CENTRAL_API}/api/auth/mini-app-exchange`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,10 +53,20 @@ export async function POST(request: NextRequest) {
       }
 
       const hubData = await hubResponse.json();
-      userData = hubData.user;
 
-      // Verify it's a PARENT code (STAR-PAD-XXXXXX)
-      if (!userData.code?.startsWith('STAR-PAD-')) {
+      // Map camelCase fields from Hub Central to snake_case
+      userData = {
+        id: hubData.user.id,
+        family_id: hubData.user.familyId,
+        first_name: hubData.user.firstName,
+        last_name: hubData.user.lastName,
+        email: hubData.user.email || null,
+        code: hubData.user.code,
+        role: 'parent',
+      };
+
+      // Verify it's a PARENT code (P-XXXXXXXX)
+      if (!userData.code?.startsWith('P-')) {
         return NextResponse.json(
           { error: 'Este código no es válido para StarEduca Senior' },
           { status: 403 }
