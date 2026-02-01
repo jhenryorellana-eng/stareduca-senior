@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { createToken } from '@/lib/auth';
 
-const HUB_CENTRAL_API = process.env.HUB_CENTRAL_API_URL || 'https://app.starbizacademy.com';
+const HUB_CENTRAL_API = process.env.HUB_CENTRAL_API_URL;
 const MINI_APP_ID = process.env.MINI_APP_ID || 'stareduca_senior';
 
 export async function POST(request: NextRequest) {
@@ -32,16 +32,14 @@ export async function POST(request: NextRequest) {
         role: 'parent',
       };
     } else {
-      // Exchange code with Hub Central
-      const hubResponse = await fetch(`${HUB_CENTRAL_API}/api/auth/mini-app-exchange`, {
+      // Exchange code with Hub Central (same pattern as StarEduca Junior)
+      const hubResponse = await fetch(`${HUB_CENTRAL_API}/auth/mini-app-exchange`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Mini-App-Id': MINI_APP_ID,
         },
-        body: JSON.stringify({
-          code,
-          mini_app_id: MINI_APP_ID,
-        }),
+        body: JSON.stringify({ code }),
       });
 
       if (!hubResponse.ok) {
