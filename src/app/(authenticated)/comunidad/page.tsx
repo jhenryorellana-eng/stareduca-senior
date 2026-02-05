@@ -245,69 +245,69 @@ export default function ComunidadPage() {
                   </button>
                 </div>
               )}
-              <div className="flex items-center justify-between mt-3">
-                <div className="flex items-center gap-2">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
-                    onChange={handleImageSelect}
-                    className="hidden"
-                  />
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className={cn(
-                      'p-2 rounded-lg hover:bg-gray-100 transition-colors',
-                      selectedImage ? 'text-primary bg-primary/10' : 'text-primary'
-                    )}
-                  >
-                    <Image size={20} />
-                  </button>
-                  <div className="relative">
-                    <button
-                      onClick={() => setShowTypeSelect(!showTypeSelect)}
-                      className="px-3 py-1.5 rounded-lg bg-gray-100 text-sm font-medium text-gray-700 flex items-center gap-2"
-                    >
-                      {postTypeOptions.find((o) => o.value === newPostType)?.label}
-                    </button>
-                    {showTypeSelect && (
-                      <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border py-1 z-20">
-                        {postTypeOptions.map((option) => (
-                          <button
-                            key={option.value}
-                            onClick={() => {
-                              setNewPostType(option.value);
-                              setShowTypeSelect(false);
-                            }}
-                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
-                          >
-                            <option.icon size={16} />
-                            {option.label}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
+            </div>
+          </div>
+          <div className="flex items-center justify-between mt-3">
+            <div className="flex items-center gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className={cn(
+                  'p-2 rounded-lg hover:bg-gray-100 transition-colors',
+                  selectedImage ? 'text-primary bg-primary/10' : 'text-primary'
+                )}
+              >
+                <Image size={20} />
+              </button>
+              <div className="relative">
                 <button
-                  onClick={handleCreatePost}
-                  disabled={!newContent.trim() || isPosting}
-                  className={cn(
-                    'px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all',
-                    newContent.trim() && !isPosting
-                      ? 'gradient-primary text-white'
-                      : 'bg-gray-100 text-gray-400'
-                  )}
+                  onClick={() => setShowTypeSelect(!showTypeSelect)}
+                  className="px-3 py-1.5 rounded-lg bg-gray-100 text-sm font-medium text-gray-700 flex items-center gap-2"
                 >
-                  {isPosting ? (
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <Send size={16} />
-                  )}
-                  Publicar
+                  {postTypeOptions.find((o) => o.value === newPostType)?.label}
                 </button>
+                {showTypeSelect && (
+                  <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border py-1 z-20">
+                    {postTypeOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => {
+                          setNewPostType(option.value);
+                          setShowTypeSelect(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+                      >
+                        <option.icon size={16} />
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
+            <button
+              onClick={handleCreatePost}
+              disabled={!newContent.trim() || isPosting}
+              className={cn(
+                'px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all',
+                newContent.trim() && !isPosting
+                  ? 'gradient-primary text-white'
+                  : 'bg-gray-100 text-gray-400'
+              )}
+            >
+              {isPosting ? (
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Send size={16} />
+              )}
+              Publicar
+            </button>
           </div>
         </div>
       </div>

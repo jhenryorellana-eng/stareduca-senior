@@ -43,7 +43,7 @@ export default function AuthenticatedLayout({
   }
 
   return (
-    <div className={`min-h-screen bg-background-light ${!shouldHideNav ? 'pb-[calc(5rem+env(safe-area-inset-bottom))]' : ''}`}>
+    <div className={`min-h-screen bg-background-light ${!shouldHideNav ? 'pb-20' : ''}`}>
       <main>{children}</main>
       {!shouldHideNav && <BottomNav />}
     </div>
