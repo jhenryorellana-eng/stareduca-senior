@@ -34,7 +34,7 @@ export async function GET(
       return NextResponse.json({ error: 'Error al obtener comentarios' }, { status: 500 });
     }
 
-    const formattedComments = comments?.map((comment) => ({
+    const formattedComments = comments?.map((comment: any) => ({
       id: comment.id,
       content: comment.content,
       createdAt: comment.created_at,
@@ -92,6 +92,8 @@ export async function POST(
       return NextResponse.json({ error: 'Error al crear comentario' }, { status: 500 });
     }
 
+    const parentData = comment.parent as any;
+
     // Create notification for post author
     const { data: post } = await supabaseAdmin
       .from('posts')
@@ -101,8 +103,8 @@ export async function POST(
 
     // Only notify if the commenter is not the post author
     if (post && post.parent_id !== auth.sub) {
-      const commenterName = comment.parent
-        ? `${comment.parent.first_name} ${comment.parent.last_name}`
+      const commenterName = parentData
+        ? `${parentData.first_name} ${parentData.last_name}`
         : 'Alguien';
 
       await supabaseAdmin.from('notifications').insert({
@@ -119,11 +121,11 @@ export async function POST(
         id: comment.id,
         content: comment.content,
         createdAt: comment.created_at,
-        author: comment.parent ? {
-          id: comment.parent.id,
-          firstName: comment.parent.first_name,
-          lastName: comment.parent.last_name,
-          avatarUrl: comment.parent.avatar_url,
+        author: parentData ? {
+          id: parentData.id,
+          firstName: parentData.first_name,
+          lastName: parentData.last_name,
+          avatarUrl: parentData.avatar_url,
         } : null,
       },
     });

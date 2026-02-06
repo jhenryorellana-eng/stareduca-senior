@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 
     const reactionSet = new Set(userReactions?.map((r) => r.post_id) || []);
 
-    const formattedPosts = posts?.map((post) => ({
+    const formattedPosts = posts?.map((post: any) => ({
       id: post.id,
       content: post.content,
       imageUrl: post.image_url,
@@ -116,6 +116,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Error al crear post' }, { status: 500 });
     }
 
+    const parentData = post.parent as any;
     return NextResponse.json({
       post: {
         id: post.id,
@@ -125,11 +126,11 @@ export async function POST(request: NextRequest) {
         reactionCount: post.reaction_count,
         commentCount: post.comment_count,
         createdAt: post.created_at,
-        author: post.parent ? {
-          id: post.parent.id,
-          firstName: post.parent.first_name,
-          lastName: post.parent.last_name,
-          avatarUrl: post.parent.avatar_url,
+        author: parentData ? {
+          id: parentData.id,
+          firstName: parentData.first_name,
+          lastName: parentData.last_name,
+          avatarUrl: parentData.avatar_url,
         } : null,
         hasReacted: false,
       },
