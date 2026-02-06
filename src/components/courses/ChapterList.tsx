@@ -6,16 +6,18 @@ import type { ChapterWithProgress } from '@/types';
 interface ChapterListProps {
   chapters: ChapterWithProgress[];
   courseId: string;
-  currentChapterIndex: number;
 }
 
-export function ChapterList({ chapters, courseId, currentChapterIndex }: ChapterListProps) {
+export function ChapterList({ chapters, courseId }: ChapterListProps) {
+  // Find the first incomplete chapter (current)
+  const currentIndex = chapters.findIndex((ch) => !ch.isCompleted);
+
   return (
     <div className="space-y-2">
       {chapters.map((chapter, index) => {
-        // A chapter is locked if any previous chapter is not completed
-        const isLocked = index > 0 && !chapters[index - 1].isCompleted && index !== currentChapterIndex;
-        const isCurrent = index === currentChapterIndex;
+        // A chapter is locked if the previous chapter is not completed
+        const isLocked = index > 0 && !chapters[index - 1].isCompleted && !chapter.isCompleted;
+        const isCurrent = index === currentIndex;
 
         return (
           <ChapterItem
@@ -23,7 +25,7 @@ export function ChapterList({ chapters, courseId, currentChapterIndex }: Chapter
             chapter={chapter}
             courseId={courseId}
             isCurrent={isCurrent}
-            isLocked={isLocked && !chapter.isCompleted}
+            isLocked={isLocked}
             index={index}
           />
         );

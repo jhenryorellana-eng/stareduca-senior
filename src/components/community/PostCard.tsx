@@ -42,7 +42,7 @@ export function PostCard({ post, currentUserId, onReaction, onComment, onDelete 
   const [showMenu, setShowMenu] = useState(false);
   const config = postTypeConfig[post.postType] || postTypeConfig.experience;
   const TypeIcon = config.icon;
-  const isOwner = currentUserId && post.author.id === currentUserId;
+  const isOwner = currentUserId && post.author?.id === currentUserId;
 
   const handleDelete = () => {
     setShowMenu(false);
@@ -56,15 +56,15 @@ export function PostCard({ post, currentUserId, onReaction, onComment, onDelete 
       {/* Header */}
       <div className="flex items-start gap-3 mb-3">
         <Avatar
-          src={post.author.avatarUrl}
-          firstName={post.author.firstName}
-          lastName={post.author.lastName}
+          src={post.author?.avatarUrl}
+          firstName={post.author?.firstName || 'Usuario'}
+          lastName={post.author?.lastName || ''}
           size="md"
         />
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <p className="font-bold text-gray-900">
-              {post.author.firstName} {post.author.lastName}
+              {post.author?.firstName || 'Usuario'} {post.author?.lastName || 'Eliminado'}
             </p>
             <div className="flex items-center gap-2">
               <span className={cn(

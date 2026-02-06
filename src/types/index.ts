@@ -21,6 +21,7 @@ export interface Course {
   isPublished: boolean;
   hasEvaluation: boolean;
   totalChapters: number;
+  totalModules: number;
   totalDuration: number;
 }
 
@@ -38,10 +39,27 @@ export interface CourseWithProgress extends Course {
   currentChapterIndex: number | null;
 }
 
+// Module
+export interface Module {
+  id: string;
+  courseId: string;
+  title: string;
+  orderIndex: number;
+}
+
+export interface ModuleWithChapters extends Module {
+  chapters: ChapterWithProgress[];
+  isCompleted: boolean;
+  isUnlocked: boolean;
+  completedChapters: number;
+  totalChapters: number;
+}
+
 // Chapter
 export interface Chapter {
   id: string;
   courseId: string;
+  moduleId: string;
   title: string;
   description: string | null;
   videoUrl: string | null;

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { getAuthFromRequest, unauthorizedResponse } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(request: NextRequest) {
   const auth = await getAuthFromRequest(request);
   if (!auth) {
@@ -31,7 +34,9 @@ export async function GET(request: NextRequest) {
       createdAt: n.created_at,
     })) || [];
 
-    return NextResponse.json({ notifications: formattedNotifications });
+    const response = NextResponse.json({ notifications: formattedNotifications });
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    return response;
   } catch (error) {
     console.error('Notifications error:', error);
     return NextResponse.json({ error: 'Error interno' }, { status: 500 });

@@ -5,17 +5,18 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuthStore } from '@/stores/auth-store';
-import { ChapterList } from '@/components/courses';
-import { ArrowLeft, Share2, Clock, BookMarked, Lock, GraduationCap, ArrowRight } from 'lucide-react';
+import { ModuleList } from '@/components/courses';
+import { ArrowLeft, Share2, Clock, BookMarked, Layers, Lock, GraduationCap, ArrowRight } from 'lucide-react';
 import { formatDuration, cn } from '@/lib/utils';
-import type { CourseWithProgress, ChapterWithProgress } from '@/types';
+import type { CourseWithProgress, ModuleWithChapters } from '@/types';
 
 export default function CourseDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { token } = useAuthStore();
   const [course, setCourse] = useState<CourseWithProgress | null>(null);
-  const [chapters, setChapters] = useState<ChapterWithProgress[]>([]);
+  const [modules, setModules] = useState<ModuleWithChapters[]>([]);
+  const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isEnrolling, setIsEnrolling] = useState(false);
@@ -36,7 +37,8 @@ export default function CourseDetailPage() {
         if (response.ok) {
           const data = await response.json();
           setCourse(data.course);
-          setChapters(data.chapters);
+          setModules(data.modules);
+          setCurrentModuleIndex(data.currentModuleIndex);
           setCurrentChapterIndex(data.currentChapterIndex);
         } else {
           router.push('/aprender');
@@ -74,7 +76,8 @@ export default function CourseDetailPage() {
         if (dataResponse.ok) {
           const data = await dataResponse.json();
           setCourse(data.course);
-          setChapters(data.chapters);
+          setModules(data.modules);
+          setCurrentModuleIndex(data.currentModuleIndex);
           setCurrentChapterIndex(data.currentChapterIndex);
         }
       }
@@ -85,8 +88,12 @@ export default function CourseDetailPage() {
     }
   };
 
-  const allChaptersCompleted = chapters.every((ch) => ch.isCompleted);
-  const currentChapter = chapters[currentChapterIndex];
+  // Check if all chapters across all modules are completed
+  const allChaptersCompleted = modules.length > 0 && modules.every((m) => m.isCompleted);
+
+  // Get current chapter for the CTA button
+  const currentModule = modules[currentModuleIndex];
+  const currentChapter = currentModule?.chapters?.[currentChapterIndex];
 
   if (isLoading) {
     return (
@@ -157,24 +164,34 @@ export default function CourseDetailPage() {
 
       {/* Stats Card */}
       <div className="relative z-20 -mt-8 px-4">
-        <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-ios flex justify-center items-center gap-12">
+        <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-ios flex justify-center items-center gap-8">
           <div className="flex flex-col items-center">
-            <Clock className="text-primary mb-1 w-7 h-7" />
+            <Layers className="text-primary mb-1 w-6 h-6" />
             <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">
-              Duración
+              Módulos
             </p>
             <p className="text-base font-bold text-gray-900">
-              {formatDuration(course.totalDuration)}
+              {course.totalModules}
             </p>
           </div>
           <div className="w-[1px] h-8 bg-gray-100" />
           <div className="flex flex-col items-center">
-            <BookMarked className="text-primary mb-1 w-7 h-7" />
+            <BookMarked className="text-primary mb-1 w-6 h-6" />
             <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">
               Capítulos
             </p>
             <p className="text-base font-bold text-gray-900">
               {course.totalChapters}
+            </p>
+          </div>
+          <div className="w-[1px] h-8 bg-gray-100" />
+          <div className="flex flex-col items-center">
+            <Clock className="text-primary mb-1 w-6 h-6" />
+            <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">
+              Duración
+            </p>
+            <p className="text-base font-bold text-gray-900">
+              {formatDuration(course.totalDuration)}
             </p>
           </div>
         </div>
@@ -188,18 +205,17 @@ export default function CourseDetailPage() {
         </p>
       </div>
 
-      {/* Chapters Section */}
+      {/* Modules Section */}
       <div className="px-6 pt-10">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-bold text-gray-900">Contenido del curso</h2>
           <span className="text-xs font-semibold text-gray-400">
-            {course.totalChapters} capítulos
+            {course.totalModules} módulos • {course.totalChapters} capítulos
           </span>
         </div>
-        <ChapterList
-          chapters={chapters}
+        <ModuleList
+          modules={modules}
           courseId={courseId}
-          currentChapterIndex={currentChapterIndex}
         />
       </div>
 

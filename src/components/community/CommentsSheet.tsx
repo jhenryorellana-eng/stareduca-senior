@@ -129,15 +129,15 @@ export function CommentsSheet({ postId, isOpen, onClose, onCommentAdded }: Comme
               {comments.map((comment) => (
                 <div key={comment.id} className="flex gap-3">
                   <Avatar
-                    src={comment.author.avatarUrl}
-                    firstName={comment.author.firstName}
-                    lastName={comment.author.lastName}
+                    src={comment.author?.avatarUrl}
+                    firstName={comment.author?.firstName || 'Usuario'}
+                    lastName={comment.author?.lastName || ''}
                     size="sm"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-sm text-gray-900">
-                        {comment.author.firstName} {comment.author.lastName}
+                        {comment.author?.firstName || 'Usuario'} {comment.author?.lastName || ''}
                       </span>
                       <span className="text-xs text-gray-400">
                         {formatRelativeTime(comment.createdAt)}

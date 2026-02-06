@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { getAuthFromRequest, unauthorizedResponse } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(request: NextRequest) {
   const auth = await getAuthFromRequest(request);
   if (!auth) {
@@ -57,16 +60,18 @@ export async function GET(request: NextRequest) {
       reactionCount: post.reaction_count,
       commentCount: post.comment_count,
       createdAt: post.created_at,
-      author: post.parent?.[0] ? {
-        id: post.parent[0].id,
-        firstName: post.parent[0].first_name,
-        lastName: post.parent[0].last_name,
-        avatarUrl: post.parent[0].avatar_url,
+      author: post.parent ? {
+        id: post.parent.id,
+        firstName: post.parent.first_name,
+        lastName: post.parent.last_name,
+        avatarUrl: post.parent.avatar_url,
       } : null,
       hasReacted: reactionSet.has(post.id),
     })) || [];
 
-    return NextResponse.json({ posts: formattedPosts });
+    const response = NextResponse.json({ posts: formattedPosts });
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    return response;
   } catch (error) {
     console.error('Posts API error:', error);
     return NextResponse.json({ error: 'Error interno' }, { status: 500 });
@@ -120,11 +125,11 @@ export async function POST(request: NextRequest) {
         reactionCount: post.reaction_count,
         commentCount: post.comment_count,
         createdAt: post.created_at,
-        author: post.parent?.[0] ? {
-          id: post.parent[0].id,
-          firstName: post.parent[0].first_name,
-          lastName: post.parent[0].last_name,
-          avatarUrl: post.parent[0].avatar_url,
+        author: post.parent ? {
+          id: post.parent.id,
+          firstName: post.parent.first_name,
+          lastName: post.parent.last_name,
+          avatarUrl: post.parent.avatar_url,
         } : null,
         hasReacted: false,
       },

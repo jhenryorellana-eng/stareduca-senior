@@ -21,9 +21,17 @@ interface CourseInfo {
   slug: string;
 }
 
+interface ModuleInfo {
+  id: string;
+  title: string;
+  orderIndex: number;
+}
+
 interface NavigationInfo {
   currentIndex: number;
   totalChapters: number;
+  chapterIndexInModule: number;
+  totalChaptersInModule: number;
   prevChapterId: string | null;
   nextChapterId: string | null;
 }
@@ -35,6 +43,7 @@ export default function ChapterPage() {
   const { incrementChaptersViewed } = useUserStore();
   const [chapter, setChapter] = useState<ChapterData | null>(null);
   const [course, setCourse] = useState<CourseInfo | null>(null);
+  const [moduleInfo, setModuleInfo] = useState<ModuleInfo | null>(null);
   const [navigation, setNavigation] = useState<NavigationInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCompleting, setIsCompleting] = useState(false);
@@ -57,6 +66,7 @@ export default function ChapterPage() {
           const data = await response.json();
           setChapter(data.chapter);
           setCourse(data.course);
+          setModuleInfo(data.module);
           setNavigation(data.navigation);
         } else {
           router.push(`/aprender/${courseId}`);
@@ -194,10 +204,10 @@ export default function ChapterPage() {
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <h3 className="text-gray-900 tracking-tight text-2xl font-bold leading-tight pb-1">
-                {navigation.currentIndex}. {chapter.title}
+                {navigation.chapterIndexInModule}. {chapter.title}
               </h3>
               <p className="text-primary-capitulo/70 text-[11px] font-bold uppercase tracking-widest pb-5">
-                Capítulo {navigation.currentIndex} de {navigation.totalChapters} • {formatDuration(chapter.durationMinutes)}
+                {moduleInfo ? `${moduleInfo.title} • ` : ''}Capítulo {navigation.chapterIndexInModule} de {navigation.totalChaptersInModule} • {formatDuration(chapter.durationMinutes)}
               </p>
             </div>
             {chapter.isCompleted && (

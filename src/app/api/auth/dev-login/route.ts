@@ -2,10 +2,24 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { createToken } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const MINI_APP_ID = process.env.MINI_APP_ID || 'stareduca_senior';
 
-export async function POST() {
-  // Only allow in development
+export async function POST(request: Request) {
+  // Only allow from localhost (host header check)
+  const host = request.headers.get('host') || '';
+  const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
+
+  if (!isLocalhost) {
+    return NextResponse.json(
+      { error: 'Dev login solo disponible en localhost' },
+      { status: 403 }
+    );
+  }
+
+  // Additional check: only allow in development
   if (process.env.NODE_ENV !== 'development') {
     return NextResponse.json(
       { error: 'Solo disponible en desarrollo' },

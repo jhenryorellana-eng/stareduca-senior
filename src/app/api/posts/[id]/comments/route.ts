@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { getAuthFromRequest, unauthorizedResponse } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -35,15 +38,17 @@ export async function GET(
       id: comment.id,
       content: comment.content,
       createdAt: comment.created_at,
-      author: comment.parent?.[0] ? {
-        id: comment.parent[0].id,
-        firstName: comment.parent[0].first_name,
-        lastName: comment.parent[0].last_name,
-        avatarUrl: comment.parent[0].avatar_url,
+      author: comment.parent ? {
+        id: comment.parent.id,
+        firstName: comment.parent.first_name,
+        lastName: comment.parent.last_name,
+        avatarUrl: comment.parent.avatar_url,
       } : null,
     })) || [];
 
-    return NextResponse.json({ comments: formattedComments });
+    const response = NextResponse.json({ comments: formattedComments });
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    return response;
   } catch (error) {
     console.error('Comments API error:', error);
     return NextResponse.json({ error: 'Error interno' }, { status: 500 });
@@ -96,8 +101,8 @@ export async function POST(
 
     // Only notify if the commenter is not the post author
     if (post && post.parent_id !== auth.sub) {
-      const commenterName = comment.parent?.[0]
-        ? `${comment.parent[0].first_name} ${comment.parent[0].last_name}`
+      const commenterName = comment.parent
+        ? `${comment.parent.first_name} ${comment.parent.last_name}`
         : 'Alguien';
 
       await supabaseAdmin.from('notifications').insert({
@@ -114,11 +119,11 @@ export async function POST(
         id: comment.id,
         content: comment.content,
         createdAt: comment.created_at,
-        author: comment.parent?.[0] ? {
-          id: comment.parent[0].id,
-          firstName: comment.parent[0].first_name,
-          lastName: comment.parent[0].last_name,
-          avatarUrl: comment.parent[0].avatar_url,
+        author: comment.parent ? {
+          id: comment.parent.id,
+          firstName: comment.parent.first_name,
+          lastName: comment.parent.last_name,
+          avatarUrl: comment.parent.avatar_url,
         } : null,
       },
     });

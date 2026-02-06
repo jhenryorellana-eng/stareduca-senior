@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { getAuthFromRequest, unauthorizedResponse } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(request: NextRequest) {
   const auth = await getAuthFromRequest(request);
   if (!auth) {
@@ -47,7 +50,7 @@ export async function GET(request: NextRequest) {
       .eq('parent_id', auth.sub)
       .eq('is_read', false);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       parent: {
         id: parent.id,
         externalId: parent.external_id,
@@ -65,6 +68,8 @@ export async function GET(request: NextRequest) {
       },
       unreadNotifications: unreadCount || 0,
     });
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    return response;
   } catch (error) {
     console.error('Profile API error:', error);
     return NextResponse.json(

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { getAuthFromRequest, unauthorizedResponse } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(request: NextRequest) {
   const auth = await getAuthFromRequest(request);
   if (!auth) {
@@ -9,7 +12,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Get all published courses with chapters count
+    // Get all published courses with modules and chapters count
     const { data: courses, error: coursesError } = await supabaseAdmin
       .from('courses')
       .select(`
@@ -21,7 +24,10 @@ export async function GET(request: NextRequest) {
         category,
         is_published,
         has_evaluation,
-        chapters(id, duration_minutes)
+        modules(
+          id,
+          chapters(id, duration_minutes)
+        )
       `)
       .eq('is_published', true)
       .order('created_at', { ascending: false });
@@ -60,15 +66,31 @@ export async function GET(request: NextRequest) {
       enrollments?.map((e) => [e.course_id, e]) || []
     );
 
+    // Create set of completed chapter IDs for progress calculation
+    const completedChapterIds = new Set(
+      chapterProgress?.map((p) => p.chapter_id) || []
+    );
+
     // Process courses with progress
     const coursesWithProgress = courses?.map((course) => {
-      const chapters = course.chapters || [];
-      const totalChapters = chapters.length;
-      const totalDuration = chapters.reduce(
+      const modules = course.modules || [];
+      // Flatten chapters from all modules
+      const allChapters = modules.flatMap((m: any) => m.chapters || []);
+      const totalChapters = allChapters.length;
+      const totalModules = modules.length;
+      const totalDuration = allChapters.reduce(
         (sum: number, ch: { duration_minutes: number }) => sum + (ch.duration_minutes || 0),
         0
       );
       const enrollment = enrollmentMap.get(course.id);
+
+      // Calculate progress dynamically based on completed chapters
+      const completedInCourse = allChapters.filter(
+        (ch: { id: string }) => completedChapterIds.has(ch.id)
+      ).length;
+      const calculatedProgress = totalChapters > 0
+        ? Math.round((completedInCourse / totalChapters) * 100)
+        : 0;
 
       return {
         id: course.id,
@@ -79,10 +101,11 @@ export async function GET(request: NextRequest) {
         category: course.category,
         hasEvaluation: course.has_evaluation,
         totalChapters,
+        totalModules,
         totalDuration,
         isEnrolled: !!enrollment,
         isCompleted: enrollment?.status === 'completed',
-        progressPercent: enrollment?.progress_percent || 0,
+        progressPercent: enrollment ? calculatedProgress : 0,
       };
     }) || [];
 
@@ -91,7 +114,7 @@ export async function GET(request: NextRequest) {
     const completedCourses = enrollments?.filter((e) => e.status === 'completed').length || 0;
     const chaptersViewed = chapterProgress?.length || 0;
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       courses: coursesWithProgress,
       stats: {
         activeCourses,
@@ -99,6 +122,8 @@ export async function GET(request: NextRequest) {
         chaptersViewed,
       },
     });
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    return response;
   } catch (error) {
     console.error('Courses API error:', error);
     return NextResponse.json(

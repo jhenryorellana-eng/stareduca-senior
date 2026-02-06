@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { getAuthFromRequest, unauthorizedResponse } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -14,7 +17,7 @@ export async function GET(
   const { id } = await params;
 
   try {
-    // Get course with chapters and materials
+    // Get course with modules, chapters, and materials
     const { data: course, error: courseError } = await supabaseAdmin
       .from('courses')
       .select(`
@@ -26,20 +29,25 @@ export async function GET(
         category,
         is_published,
         has_evaluation,
-        chapters(
+        modules(
           id,
           title,
-          description,
-          video_url,
-          duration_minutes,
           order_index,
-          materials(
+          chapters(
             id,
             title,
-            type,
-            url,
             description,
-            order_index
+            video_url,
+            duration_minutes,
+            order_index,
+            materials(
+              id,
+              title,
+              type,
+              url,
+              description,
+              order_index
+            )
           )
         )
       `)
@@ -54,8 +62,8 @@ export async function GET(
       );
     }
 
-    // Sort chapters by order_index
-    const sortedChapters = (course.chapters || []).sort(
+    // Sort modules by order_index
+    const sortedModules = (course.modules || []).sort(
       (a, b) => a.order_index - b.order_index
     );
 
@@ -77,53 +85,95 @@ export async function GET(
       chapterProgress?.map((p) => [p.chapter_id, p]) || []
     );
 
-    // Process chapters with progress
-    const chaptersWithProgress = sortedChapters.map((chapter, index) => {
-      const progress = progressMap.get(chapter.id);
-      const sortedMaterials = (chapter.materials || []).sort(
+    // Process modules with chapters and progress
+    let totalChapters = 0;
+    let totalDuration = 0;
+    let completedChaptersCount = 0;
+    let currentModuleIndex = 0;
+    let currentChapterIndex = 0;
+    let foundCurrent = false;
+
+    // Calculate unlock state: module N is unlocked if all chapters in modules 0..N-1 are completed
+    let allPreviousModulesCompleted = true;
+
+    const modulesWithProgress = sortedModules.map((module, moduleIdx) => {
+      const sortedChapters = (module.chapters || []).sort(
         (a, b) => a.order_index - b.order_index
       );
 
+      const isUnlocked = allPreviousModulesCompleted;
+      let moduleCompleted = true;
+
+      const chaptersWithProgress = sortedChapters.map((chapter, chapterIdx) => {
+        const progress = progressMap.get(chapter.id);
+        const isCompleted = progress?.is_completed || false;
+        const sortedMaterials = (chapter.materials || []).sort(
+          (a, b) => a.order_index - b.order_index
+        );
+
+        totalChapters++;
+        totalDuration += chapter.duration_minutes || 0;
+
+        if (isCompleted) {
+          completedChaptersCount++;
+        } else {
+          moduleCompleted = false;
+          if (!foundCurrent && isUnlocked) {
+            currentModuleIndex = moduleIdx;
+            currentChapterIndex = chapterIdx;
+            foundCurrent = true;
+          }
+        }
+
+        return {
+          id: chapter.id,
+          moduleId: module.id,
+          title: chapter.title,
+          description: chapter.description,
+          videoUrl: chapter.video_url,
+          durationMinutes: chapter.duration_minutes,
+          orderIndex: chapter.order_index,
+          isCompleted,
+          completedAt: progress?.completed_at || null,
+          watchTimeSeconds: progress?.watch_time_seconds || 0,
+          materials: sortedMaterials.map((m) => ({
+            id: m.id,
+            title: m.title,
+            type: m.type,
+            url: m.url,
+            description: m.description,
+            orderIndex: m.order_index,
+          })),
+        };
+      });
+
+      if (!moduleCompleted) {
+        allPreviousModulesCompleted = false;
+      }
+
+      const completedInModule = chaptersWithProgress.filter((ch) => ch.isCompleted).length;
+
       return {
-        id: chapter.id,
-        title: chapter.title,
-        description: chapter.description,
-        videoUrl: chapter.video_url,
-        durationMinutes: chapter.duration_minutes,
-        orderIndex: chapter.order_index,
-        isCompleted: progress?.is_completed || false,
-        completedAt: progress?.completed_at || null,
-        watchTimeSeconds: progress?.watch_time_seconds || 0,
-        materials: sortedMaterials.map((m) => ({
-          id: m.id,
-          title: m.title,
-          type: m.type,
-          url: m.url,
-          description: m.description,
-          orderIndex: m.order_index,
-        })),
+        id: module.id,
+        courseId: id,
+        title: module.title,
+        orderIndex: module.order_index,
+        isUnlocked,
+        isCompleted: moduleCompleted && chaptersWithProgress.length > 0,
+        completedChapters: completedInModule,
+        totalChapters: chaptersWithProgress.length,
+        chapters: chaptersWithProgress,
       };
     });
 
-    // Find current chapter (first incomplete after last completed)
-    let currentChapterIndex = 0;
-    for (let i = 0; i < chaptersWithProgress.length; i++) {
-      if (!chaptersWithProgress[i].isCompleted) {
-        currentChapterIndex = i;
-        break;
-      }
-      if (i === chaptersWithProgress.length - 1) {
-        currentChapterIndex = i;
-      }
+    // If all chapters are completed, point to the last one
+    if (!foundCurrent && totalChapters > 0) {
+      const lastModule = modulesWithProgress[modulesWithProgress.length - 1];
+      currentModuleIndex = modulesWithProgress.length - 1;
+      currentChapterIndex = lastModule ? lastModule.chapters.length - 1 : 0;
     }
 
-    // Calculate total duration
-    const totalDuration = sortedChapters.reduce(
-      (sum, ch) => sum + (ch.duration_minutes || 0),
-      0
-    );
-
-    return NextResponse.json({
+    const response = NextResponse.json({
       course: {
         id: course.id,
         title: course.title,
@@ -132,15 +182,21 @@ export async function GET(
         thumbnailUrl: course.thumbnail_url,
         category: course.category,
         hasEvaluation: course.has_evaluation,
-        totalChapters: sortedChapters.length,
+        totalChapters,
+        totalModules: sortedModules.length,
         totalDuration,
         isEnrolled: !!enrollment,
         isCompleted: enrollment?.status === 'completed',
-        progressPercent: enrollment?.progress_percent || 0,
+        progressPercent: totalChapters > 0
+          ? Math.round((completedChaptersCount / totalChapters) * 100)
+          : 0,
       },
-      chapters: chaptersWithProgress,
+      modules: modulesWithProgress,
+      currentModuleIndex,
       currentChapterIndex,
     });
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    return response;
   } catch (error) {
     console.error('Course detail error:', error);
     return NextResponse.json(

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { createToken } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const HUB_CENTRAL_API = process.env.HUB_CENTRAL_API_URL;
 const MINI_APP_ID = process.env.MINI_APP_ID || 'stareduca_senior';
 

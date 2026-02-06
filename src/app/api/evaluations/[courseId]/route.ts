@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { getAuthFromRequest, unauthorizedResponse } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ courseId: string }> }
@@ -58,7 +61,7 @@ export async function GET(
         orderIndex: q.order_index,
       }));
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       evaluation: {
         id: evaluation.id,
         courseId: evaluation.course_id,
@@ -74,6 +77,8 @@ export async function GET(
         attemptedAt: a.attempted_at,
       })) || [],
     });
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    return response;
   } catch (error) {
     console.error('Evaluation error:', error);
     return NextResponse.json(
