@@ -37,7 +37,7 @@ export function ModuleItem({
     >
       {/* Module Header */}
       <button
-        className="w-full flex items-center gap-3 p-4"
+        className="w-full flex items-center gap-3 p-4 tablet:p-5"
         onClick={() => !isLocked && setIsExpanded(!isExpanded)}
         disabled={isLocked}
       >
@@ -100,7 +100,7 @@ export function ModuleItem({
 
       {/* Chapters */}
       {isExpanded && !isLocked && module.chapters.length > 0 && (
-        <div className="px-4 pb-4">
+        <div className="px-4 tablet:px-5 pb-4 tablet:pb-5">
           <ChapterList
             chapters={module.chapters}
             courseId={courseId}

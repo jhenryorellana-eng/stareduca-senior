@@ -52,7 +52,7 @@ export function PostCard({ post, currentUserId, onReaction, onComment, onDelete 
   };
 
   return (
-    <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-50">
+    <div className="bg-white rounded-xl p-4 tablet:p-5 shadow-sm border border-gray-50">
       {/* Header */}
       <div className="flex items-start gap-3 mb-3">
         <Avatar
@@ -119,7 +119,7 @@ export function PostCard({ post, currentUserId, onReaction, onComment, onDelete 
           <img
             src={post.imageUrl}
             alt="Post image"
-            className="w-full h-48 object-cover"
+            className="w-full h-48 tablet:h-56 object-cover"
           />
         </div>
       )}

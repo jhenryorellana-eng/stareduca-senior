@@ -59,7 +59,7 @@ export function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 blur-nav border-t border-gray-200/50">
-      <div className="flex items-center justify-around h-20 max-w-md mx-auto px-2">
+      <div className="flex items-center justify-around h-20 max-w-md tablet:max-w-2xl mx-auto px-2 tablet:px-8">
         {navItems.map((item) => {
           const active = isActive(item);
           const Icon = item.icon;
@@ -91,7 +91,7 @@ export function BottomNav() {
                 )}
               </div>
               <span className={cn(
-                'text-[10px] font-medium',
+                'text-[10px] tablet:text-xs font-medium',
                 active && 'font-bold'
               )}>
                 {item.label}

@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        'tablet': '600px',
+      },
       colors: {
         // Colores primarios por pantalla
         primary: {

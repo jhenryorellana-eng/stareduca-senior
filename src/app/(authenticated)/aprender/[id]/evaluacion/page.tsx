@@ -120,7 +120,7 @@ export default function EvaluacionPage() {
       </header>
 
       {/* Progress */}
-      <div className="px-6 mb-8">
+      <div className="px-6 tablet:px-8 mb-8">
         <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
           <div
             className="h-full gradient-primary transition-all"
@@ -130,8 +130,8 @@ export default function EvaluacionPage() {
       </div>
 
       {/* Question */}
-      <div className="px-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-6">{question.question}</h2>
+      <div className="px-6 tablet:px-8">
+        <h2 className="text-xl tablet:text-2xl font-bold text-gray-900 mb-6">{question.question}</h2>
 
         <div className="space-y-3">
           {question.options.map((option, index) => (
@@ -160,7 +160,7 @@ export default function EvaluacionPage() {
       </div>
 
       {/* Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background-light via-background-light to-transparent">
+      <div className="fixed bottom-0 left-0 right-0 p-6 tablet:px-8 bg-gradient-to-t from-background-light via-background-light to-transparent">
         <div className="flex gap-4">
           {currentQuestion > 0 && (
             <button

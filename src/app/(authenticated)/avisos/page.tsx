@@ -139,7 +139,7 @@ export default function AvisosPage() {
   return (
     <div className="min-h-screen bg-background-avisos">
       {/* Header */}
-      <header className="gradient-avisos pt-12 pb-8 px-6">
+      <header className="gradient-avisos pt-12 pb-8 px-6 tablet:px-8">
         <div className="flex items-center justify-between mb-6">
           <Link
             href="/"
@@ -159,7 +159,7 @@ export default function AvisosPage() {
       <div className="bg-white rounded-t-3xl -mt-6 min-h-[calc(100vh-200px)]">
         {/* Mark all read button */}
         {unreadCount > 0 && (
-          <div className="px-6 py-4 border-b border-gray-100">
+          <div className="px-6 tablet:px-8 py-4 border-b border-gray-100">
             <button
               onClick={markAllAsRead}
               className="text-primary-avisos text-sm font-semibold flex items-center gap-2"
@@ -233,7 +233,7 @@ function NotificationSection({
 }) {
   return (
     <div>
-      <h2 className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
+      <h2 className="px-6 tablet:px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
         {title}
       </h2>
       <div className="space-y-1">
@@ -264,7 +264,7 @@ function NotificationItem({
     <div
       onClick={onClick}
       className={cn(
-        'flex items-start gap-3 px-6 py-4 transition-colors',
+        'flex items-start gap-3 px-6 tablet:px-8 py-4 transition-colors',
         !notification.isRead && 'bg-primary-avisos/5',
         isClickable && 'cursor-pointer hover:bg-gray-50 active:bg-gray-100'
       )}

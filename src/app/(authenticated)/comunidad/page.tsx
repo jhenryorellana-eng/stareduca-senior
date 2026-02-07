@@ -202,7 +202,7 @@ export default function ComunidadPage() {
   return (
     <div className="min-h-screen bg-background-light">
       {/* Header */}
-      <header className="gradient-header h-48 pt-8 px-6">
+      <header className="gradient-header h-48 pt-8 px-6 tablet:px-8">
         <div className="flex items-center justify-between">
           <h1 className="text-white text-3xl font-bold">Comunidad</h1>
           <button className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
@@ -212,7 +212,7 @@ export default function ComunidadPage() {
       </header>
 
       {/* Create Post Card */}
-      <div className="px-4 -mt-10 relative z-10">
+      <div className="px-4 tablet:px-6 -mt-10 relative z-10">
         <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
           <div className="flex items-start gap-3">
             <Avatar
@@ -313,7 +313,7 @@ export default function ComunidadPage() {
       </div>
 
       {/* Filters */}
-      <div className="mt-6 px-4">
+      <div className="mt-6 px-4 tablet:px-6">
         <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-2">
           {filterOptions.map((option) => (
             <button
@@ -333,7 +333,7 @@ export default function ComunidadPage() {
       </div>
 
       {/* Posts */}
-      <div className="p-4 space-y-4 pb-24">
+      <div className="p-4 tablet:px-6 space-y-4 pb-24">
         {isLoading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (

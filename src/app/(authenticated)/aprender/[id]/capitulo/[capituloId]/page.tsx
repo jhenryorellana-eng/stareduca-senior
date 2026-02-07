@@ -200,10 +200,10 @@ export default function ChapterPage() {
         </div>
 
         {/* Chapter Info */}
-        <div className="px-6 py-8">
+        <div className="px-6 tablet:px-8 py-8">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <h3 className="text-gray-900 tracking-tight text-2xl font-bold leading-tight pb-1">
+              <h3 className="text-gray-900 tracking-tight text-2xl tablet:text-3xl font-bold leading-tight pb-1">
                 {navigation.chapterIndexInModule}. {chapter.title}
               </h3>
               <p className="text-primary-capitulo/70 text-[11px] font-bold uppercase tracking-widest pb-5">
@@ -224,14 +224,14 @@ export default function ChapterPage() {
 
         {/* Materials */}
         {chapter.materials && chapter.materials.length > 0 && (
-          <div className="px-6 pb-6">
+          <div className="px-6 tablet:px-8 pb-6">
             <MaterialsList materials={chapter.materials} />
           </div>
         )}
 
         {/* Mark Complete Button */}
         {!chapter.isCompleted && (
-          <div className="px-6 pb-4">
+          <div className="px-6 tablet:px-8 pb-4">
             <button
               onClick={handleMarkComplete}
               disabled={isCompleting}
@@ -259,7 +259,7 @@ export default function ChapterPage() {
         <div className="flex-grow" />
 
         {/* Navigation Buttons */}
-        <div className="p-6 pb-12 grid grid-cols-2 gap-4 bg-background-capitulo">
+        <div className="p-6 tablet:px-8 pb-12 grid grid-cols-2 gap-4 bg-background-capitulo">
           {navigation.prevChapterId ? (
             <Link
               href={`/aprender/${courseId}/capitulo/${navigation.prevChapterId}`}

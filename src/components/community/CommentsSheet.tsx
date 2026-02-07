@@ -91,7 +91,7 @@ export function CommentsSheet({ postId, isOpen, onClose, onCommentAdded }: Comme
       />
 
       {/* Sheet */}
-      <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[80vh] flex flex-col animate-slide-up">
+      <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[80vh] flex flex-col animate-slide-up tablet:max-w-2xl tablet:mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
           <h2 className="font-bold text-lg text-gray-900">

@@ -20,7 +20,7 @@ export function CourseCard({ course }: CourseCardProps) {
   return (
     <div
       className={cn(
-        'flex flex-col gap-4 rounded-xl bg-white p-4 shadow-card border border-gray-50',
+        'flex flex-col gap-4 rounded-xl bg-white p-4 tablet:p-5 shadow-card border border-gray-50',
         isNotStarted && 'opacity-95'
       )}
     >
@@ -54,7 +54,7 @@ export function CourseCard({ course }: CourseCardProps) {
           </div>
 
           {/* Title */}
-          <p className="text-gray-900 text-base font-bold leading-tight">
+          <p className="text-gray-900 text-base tablet:text-lg font-bold leading-tight">
             {course.title}
           </p>
 
@@ -69,7 +69,7 @@ export function CourseCard({ course }: CourseCardProps) {
         {/* Thumbnail */}
         <div
           className={cn(
-            'w-20 h-20 rounded-xl shrink-0 overflow-hidden bg-gray-100',
+            'w-20 h-20 tablet:w-24 tablet:h-24 rounded-xl shrink-0 overflow-hidden bg-gray-100',
             isCompleted && 'grayscale-[0.2]'
           )}
         >

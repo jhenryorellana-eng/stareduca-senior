@@ -24,7 +24,7 @@ export default function ResultadoPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 tablet:px-8 text-center">
         {/* Icon */}
         <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 ${
           passed ? 'bg-primary/10' : 'bg-orange-100'
@@ -73,7 +73,7 @@ export default function ResultadoPage() {
       </div>
 
       {/* Buttons */}
-      <div className="p-6 pb-12 space-y-4">
+      <div className="p-6 tablet:px-8 pb-12 space-y-4">
         <Link
           href="/aprender"
           className="w-full py-5 rounded-full gradient-primary text-white font-semibold text-lg flex items-center justify-center shadow-lg shadow-primary/30"

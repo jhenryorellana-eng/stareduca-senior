@@ -115,7 +115,7 @@ export default function CourseDetailPage() {
   return (
     <div className="min-h-screen bg-background-light pb-32">
       {/* Hero Section */}
-      <div className="relative h-80 w-full overflow-hidden">
+      <div className="relative h-80 tablet:h-96 w-full overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
           {course.thumbnailUrl ? (
@@ -152,7 +152,7 @@ export default function CourseDetailPage() {
         </div>
 
         {/* Title */}
-        <div className="absolute bottom-16 left-0 w-full px-6 z-10">
+        <div className="absolute bottom-16 left-0 w-full px-6 tablet:px-8 z-10">
           <h1 className="text-white text-3xl font-bold leading-tight tracking-tight">
             {course.title}
           </h1>
@@ -163,8 +163,8 @@ export default function CourseDetailPage() {
       </div>
 
       {/* Stats Card */}
-      <div className="relative z-20 -mt-8 px-4">
-        <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-ios flex justify-center items-center gap-8">
+      <div className="relative z-20 -mt-8 px-4 tablet:px-6">
+        <div className="bg-white border border-gray-100 rounded-2xl p-5 tablet:p-6 shadow-ios flex justify-center items-center gap-8">
           <div className="flex flex-col items-center">
             <Layers className="text-primary mb-1 w-6 h-6" />
             <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">
@@ -198,7 +198,7 @@ export default function CourseDetailPage() {
       </div>
 
       {/* About Section */}
-      <div className="px-6 pt-8">
+      <div className="px-6 tablet:px-8 pt-8">
         <h2 className="text-lg font-bold mb-3 text-gray-900">Sobre este curso</h2>
         <p className="text-gray-700 text-[15px] font-medium leading-relaxed">
           {course.description}
@@ -206,7 +206,7 @@ export default function CourseDetailPage() {
       </div>
 
       {/* Modules Section */}
-      <div className="px-6 pt-10">
+      <div className="px-6 tablet:px-8 pt-10">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-bold text-gray-900">Contenido del curso</h2>
           <span className="text-xs font-semibold text-gray-400">
@@ -221,7 +221,7 @@ export default function CourseDetailPage() {
 
       {/* Exam Section */}
       {course.hasEvaluation && (
-        <div className="px-4 mt-10">
+        <div className="px-4 tablet:px-6 mt-10">
           <div className="bg-gradient-to-br from-[#2d0a31] via-[#4a1052] to-primary-light rounded-2xl p-7 text-white shadow-ios relative overflow-hidden">
             <div className="absolute -right-10 -top-10 size-40 bg-white/5 rounded-full blur-3xl" />
             <div className="relative z-10 flex justify-between items-start mb-4">
@@ -265,7 +265,7 @@ export default function CourseDetailPage() {
                 ? `/aprender/${courseId}/capitulo/${currentChapter.id}`
                 : `/aprender/${courseId}`
             }
-            className="w-full max-w-sm gradient-primary h-14 rounded-2xl flex items-center justify-center gap-3 text-white font-bold text-lg shadow-xl shadow-primary/30 active:scale-[0.98] transition-all"
+            className="w-full max-w-sm tablet:max-w-md gradient-primary h-14 rounded-2xl flex items-center justify-center gap-3 text-white font-bold text-lg shadow-xl shadow-primary/30 active:scale-[0.98] transition-all"
           >
             <span>{course.isCompleted ? 'Repasar curso' : 'Continuar Aprendiendo'}</span>
             <ArrowRight size={20} />

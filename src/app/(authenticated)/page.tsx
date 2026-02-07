@@ -67,7 +67,7 @@ export default function HomePage() {
       <div className="min-h-screen bg-background-inicio">
         <div className="animate-pulse">
           <div className="h-48 bg-gradient-to-br from-brand-blue to-brand-pink rounded-b-[2rem]" />
-          <div className="px-4 -mt-16">
+          <div className="px-4 tablet:px-6 -mt-16">
             <div className="bg-white rounded-xl h-40" />
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background-inicio pb-6">
       {/* Header with gradient */}
-      <header className="gradient-header pt-8 pb-24 px-6 rounded-b-[2rem]">
+      <header className="gradient-header pt-8 pb-24 px-6 tablet:px-8 rounded-b-[2rem]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar
@@ -105,14 +105,14 @@ export default function HomePage() {
       </header>
 
       {/* Continue Learning Card */}
-      <div className="px-4 -mt-16">
+      <div className="px-4 tablet:px-6 -mt-16">
         {courseInProgress ? (
           <Card className="shadow-xl shadow-primary-inicio/10 border border-white/20">
             <p className="text-primary-inicio text-[10px] font-bold tracking-widest uppercase mb-3">
               Continuar Aprendiendo
             </p>
             <div className="flex gap-4">
-              <div className="w-24 h-24 shrink-0 rounded-lg overflow-hidden bg-gray-100">
+              <div className="w-24 h-24 tablet:w-28 tablet:h-28 shrink-0 rounded-lg overflow-hidden bg-gray-100">
                 {courseInProgress.thumbnailUrl ? (
                   <Image
                     src={courseInProgress.thumbnailUrl}
@@ -171,22 +171,22 @@ export default function HomePage() {
       </div>
 
       {/* Stats Section */}
-      <section className="mt-8 px-4">
+      <section className="mt-8 px-4 tablet:px-6">
         <h3 className="text-gray-900 text-lg font-bold mb-4">Tu progreso</h3>
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-gradient-to-b from-white to-primary-inicio/10 p-3 rounded-xl border border-primary-inicio/5 flex flex-col items-center text-center shadow-sm">
+        <div className="grid grid-cols-3 gap-3 tablet:gap-4">
+          <div className="bg-gradient-to-b from-white to-primary-inicio/10 p-3 tablet:p-4 rounded-xl border border-primary-inicio/5 flex flex-col items-center text-center shadow-sm">
             <span className="text-primary-inicio font-bold text-xl">{activeCourses}</span>
             <p className="text-gray-600 text-[10px] font-medium leading-tight mt-1">
               Cursos activos
             </p>
           </div>
-          <div className="bg-gradient-to-b from-white to-primary-inicio/10 p-3 rounded-xl border border-primary-inicio/5 flex flex-col items-center text-center shadow-sm">
+          <div className="bg-gradient-to-b from-white to-primary-inicio/10 p-3 tablet:p-4 rounded-xl border border-primary-inicio/5 flex flex-col items-center text-center shadow-sm">
             <span className="text-primary-inicio font-bold text-xl">{chaptersViewed}</span>
             <p className="text-gray-600 text-[10px] font-medium leading-tight mt-1">
               Capítulos vistos
             </p>
           </div>
-          <div className="bg-gradient-to-b from-white to-primary-inicio/10 p-3 rounded-xl border border-primary-inicio/5 flex flex-col items-center text-center shadow-sm">
+          <div className="bg-gradient-to-b from-white to-primary-inicio/10 p-3 tablet:p-4 rounded-xl border border-primary-inicio/5 flex flex-col items-center text-center shadow-sm">
             <span className="text-primary-inicio font-bold text-xl">{completedCourses}</span>
             <p className="text-gray-600 text-[10px] font-medium leading-tight mt-1">
               Cursos completados
@@ -198,20 +198,20 @@ export default function HomePage() {
       {/* Recommended Courses */}
       {recommendedCourses.length > 0 && (
         <section className="mt-10">
-          <div className="flex justify-between items-center px-4 mb-4">
+          <div className="flex justify-between items-center px-4 tablet:px-6 mb-4">
             <h3 className="text-gray-900 text-lg font-bold">Recomendado para ti</h3>
             <Link href="/aprender" className="text-primary-inicio text-sm font-bold">
               Ver todo
             </Link>
           </div>
-          <div className="flex overflow-x-auto gap-4 px-4 hide-scrollbar">
+          <div className="flex overflow-x-auto gap-4 px-4 tablet:px-6 hide-scrollbar">
             {recommendedCourses.map((course) => (
               <Link
                 key={course.id}
                 href={`/aprender/${course.id}`}
-                className="min-w-[240px] w-[240px] bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100"
+                className="min-w-[240px] w-[240px] tablet:min-w-[280px] tablet:w-[280px] bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100"
               >
-                <div className="h-32 bg-gray-100 relative">
+                <div className="h-32 tablet:h-36 bg-gray-100 relative">
                   {course.thumbnailUrl ? (
                     <Image
                       src={course.thumbnailUrl}

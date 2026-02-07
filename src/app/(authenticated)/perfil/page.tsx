@@ -65,7 +65,7 @@ export default function PerfilPage() {
       <div className="h-48 bg-gradient-to-r from-primary to-pink-400 opacity-90" />
 
       {/* Profile Card */}
-      <div className="px-4 -mt-24 relative z-10">
+      <div className="px-4 tablet:px-6 -mt-24 relative z-10">
         <div className="bg-white rounded-2xl p-6 shadow-ios text-center">
           {/* Avatar */}
           <div className="flex justify-center -mt-16 mb-4">
@@ -89,18 +89,18 @@ export default function PerfilPage() {
       </div>
 
       {/* Stats */}
-      <div className="px-4 mt-6">
+      <div className="px-4 tablet:px-6 mt-6">
         <div className="bg-gradient-to-b from-white to-primary/10 rounded-2xl p-4 border border-white shadow-sm">
           <div className="grid grid-cols-3 gap-4">
-            <div className="bg-white/40 rounded-xl p-3 text-center">
+            <div className="bg-white/40 rounded-xl p-3 tablet:p-4 text-center">
               <p className="text-2xl font-bold text-primary">{activeCourses + completedCourses}</p>
               <p className="text-xs text-gray-500 font-medium mt-1">Sesiones</p>
             </div>
-            <div className="bg-white/40 rounded-xl p-3 text-center">
+            <div className="bg-white/40 rounded-xl p-3 tablet:p-4 text-center">
               <p className="text-2xl font-bold text-primary">{chaptersViewed}</p>
               <p className="text-xs text-gray-500 font-medium mt-1">Módulos</p>
             </div>
-            <div className="bg-white/40 rounded-xl p-3 text-center">
+            <div className="bg-white/40 rounded-xl p-3 tablet:p-4 text-center">
               <p className="text-2xl font-bold text-primary">{totalProgress}%</p>
               <p className="text-xs text-gray-500 font-medium mt-1">Progreso</p>
             </div>
@@ -109,7 +109,7 @@ export default function PerfilPage() {
       </div>
 
       {/* Settings */}
-      <div className="px-4 mt-8">
+      <div className="px-4 tablet:px-6 mt-8">
         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
           Configuración
         </h3>
@@ -135,7 +135,7 @@ export default function PerfilPage() {
       </div>
 
       {/* Logout Button */}
-      <div className="px-4 mt-8 pb-8">
+      <div className="px-4 tablet:px-6 mt-8 pb-8">
         <button
           onClick={logout}
           className="w-full flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-red-500/30 text-red-500 font-semibold hover:bg-red-50 transition-colors"

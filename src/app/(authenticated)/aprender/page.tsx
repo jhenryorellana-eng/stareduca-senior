@@ -96,7 +96,7 @@ export default function AprenderPage() {
   return (
     <div className="min-h-screen bg-background-aprender">
       {/* Header */}
-      <header className="gradient-header pt-12 pb-16 px-6 relative">
+      <header className="gradient-header pt-12 pb-16 px-6 tablet:px-8 relative">
         <div className="flex items-center justify-between mb-4">
           <Link href="/" className="text-white flex items-center">
             <ArrowLeft size={24} />
@@ -107,7 +107,7 @@ export default function AprenderPage() {
       </header>
 
       {/* Search Bar */}
-      <div className="px-4 -mt-8 relative z-10">
+      <div className="px-4 tablet:px-6 -mt-8 relative z-10">
         <div className="shadow-lg">
           <Input
             icon="search"
@@ -121,7 +121,7 @@ export default function AprenderPage() {
 
       {/* Category Chips */}
       <div className="mt-6">
-        <div className="flex gap-3 px-4 overflow-x-auto hide-scrollbar pb-2">
+        <div className="flex gap-3 px-4 tablet:px-6 overflow-x-auto hide-scrollbar pb-2">
           {categories.map((cat) => (
             <button
               key={cat.value}
@@ -148,7 +148,7 @@ export default function AprenderPage() {
 
       {/* Enrolled Courses */}
       {enrolledCourses.length > 0 && (
-        <div className="px-4 mt-6">
+        <div className="px-4 tablet:px-6 mt-6">
           <h3 className="text-gray-900 text-lg font-bold leading-tight tracking-tight mb-4">
             Mis Cursos
           </h3>
@@ -162,7 +162,7 @@ export default function AprenderPage() {
 
       {/* Available Courses */}
       {availableCourses.length > 0 && (
-        <div className="px-4 mt-6">
+        <div className="px-4 tablet:px-6 mt-6">
           <h3 className="text-gray-900 text-lg font-bold leading-tight tracking-tight mb-4">
             Explora Cursos
           </h3>
