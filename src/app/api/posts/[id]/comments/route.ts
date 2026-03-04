@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { getAuthFromRequest, unauthorizedResponse } from '@/lib/auth';
+import { sendIndividualPush } from '@/lib/push-notifications';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -114,6 +115,23 @@ export async function POST(
         message: `${commenterName} comento en tu publicacion`,
         data: { postId, commentId: comment.id },
       });
+
+      // Send push notification to post owner's device
+      const { data: postOwner } = await supabaseAdmin
+        .from('parents')
+        .select('external_id')
+        .eq('id', post.parent_id)
+        .single();
+
+      if (postOwner?.external_id) {
+        sendIndividualPush(
+          postOwner.external_id,
+          'comment',
+          'Nuevo comentario',
+          `${commenterName} comento en tu publicacion`,
+          { postId, commentId: comment.id }
+        ).catch(console.error);
+      }
     }
 
     return NextResponse.json({

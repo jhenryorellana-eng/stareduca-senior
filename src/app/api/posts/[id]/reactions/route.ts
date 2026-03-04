@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { getAuthFromRequest, unauthorizedResponse } from '@/lib/auth';
+import { sendIndividualPush } from '@/lib/push-notifications';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -70,6 +71,23 @@ export async function POST(
           message: `${reactorName} reacciono a tu publicacion`,
           data: { postId },
         });
+
+        // Send push notification to post owner's device
+        const { data: postOwner } = await supabaseAdmin
+          .from('parents')
+          .select('external_id')
+          .eq('id', post.parent_id)
+          .single();
+
+        if (postOwner?.external_id) {
+          sendIndividualPush(
+            postOwner.external_id,
+            'reaction',
+            'Nueva reaccion',
+            `${reactorName} reacciono a tu publicacion`,
+            { postId }
+          ).catch(console.error);
+        }
       }
 
       return NextResponse.json({ hasReacted: true });
