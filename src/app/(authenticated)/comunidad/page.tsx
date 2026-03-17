@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
-import { PostCard, CommentsSheet } from '@/components/community';
+import { PostCard, CommentsSheet, ReportModal, TermsGate } from '@/components/community';
 import { Avatar, Textarea } from '@/components/ui';
 import { Bell, Image, Send, MessageSquare, HelpCircle, Lightbulb, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -34,11 +34,32 @@ export default function ComunidadPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [showCommentsSheet, setShowCommentsSheet] = useState(false);
+  const [reportPostId, setReportPostId] = useState<string | null>(null);
+  const [termsAccepted, setTermsAccepted] = useState<boolean | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Check terms acceptance
   useEffect(() => {
-    fetchPosts();
-  }, [token, filter]);
+    async function checkTerms() {
+      if (!token) return;
+      try {
+        const response = await fetch('/api/terms', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setTermsAccepted(data.accepted);
+        }
+      } catch {
+        setTermsAccepted(false);
+      }
+    }
+    checkTerms();
+  }, [token]);
+
+  useEffect(() => {
+    if (termsAccepted) fetchPosts();
+  }, [token, filter, termsAccepted]);
 
   async function fetchPosts() {
     if (!token) return;
@@ -183,6 +204,27 @@ export default function ComunidadPage() {
     }
   }
 
+  function handleReport(postId: string) {
+    setReportPostId(postId);
+  }
+
+  async function handleBlock(userId: string) {
+    if (!token || !confirm('¿Bloquear a este usuario? Ya no verás sus publicaciones.')) return;
+
+    try {
+      const response = await fetch(`/api/users/${userId}/block`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) {
+        // Remove blocked user's posts from feed
+        setPosts(posts.filter((p) => p.author?.id !== userId));
+      }
+    } catch (error) {
+      console.error('Error blocking user:', error);
+    }
+  }
+
   function handleComment(postId: string) {
     setSelectedPostId(postId);
     setShowCommentsSheet(true);
@@ -199,8 +241,30 @@ export default function ComunidadPage() {
     }
   }
 
+  // Show terms gate if not accepted
+  if (termsAccepted === false) {
+    return <TermsGate onAccepted={() => setTermsAccepted(true)} />;
+  }
+
+  // Loading terms check
+  if (termsAccepted === null) {
+    return (
+      <div className="min-h-screen bg-background-light flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background-light">
+      {/* Report Modal */}
+      {reportPostId && (
+        <ReportModal
+          postId={reportPostId}
+          onClose={() => setReportPostId(null)}
+        />
+      )}
+
       {/* Header */}
       <header className="gradient-header h-48 pt-8 px-6 tablet:px-8">
         <div className="flex items-center justify-between">
@@ -363,6 +427,8 @@ export default function ComunidadPage() {
               onReaction={handleReaction}
               onComment={handleComment}
               onDelete={handleDeletePost}
+              onReport={handleReport}
+              onBlock={handleBlock}
             />
           ))
         )}

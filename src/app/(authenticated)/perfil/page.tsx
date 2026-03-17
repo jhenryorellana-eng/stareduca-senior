@@ -43,9 +43,9 @@ export default function PerfilPage() {
     : (activeCourses > 0 ? 10 : 0);
 
   const settingsItems = [
-    { icon: Settings, label: 'Ajustes de cuenta', href: '#' },
-    { icon: Lock, label: 'Privacidad y Seguridad', href: '#' },
-    { icon: HelpCircle, label: 'Centro de ayuda', href: '#' },
+    { icon: Settings, label: 'Ajustes de cuenta', href: '/perfil/ajustes' },
+    { icon: Lock, label: 'Privacidad y Seguridad', href: '/perfil/privacidad' },
+    { icon: HelpCircle, label: 'Centro de ayuda', href: '/perfil/ayuda' },
   ];
 
   return (

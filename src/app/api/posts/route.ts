@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { getAuthFromRequest, unauthorizedResponse } from '@/lib/auth';
+import { filterContent } from '@/lib/content-filter';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -17,6 +18,14 @@ export async function GET(request: NextRequest) {
   const postType = searchParams.get('type');
 
   try {
+    // Get blocked user IDs to filter them out
+    const { data: blockedRows } = await supabaseAdmin
+      .from('blocked_users')
+      .select('blocked_id')
+      .eq('blocker_id', auth.sub);
+
+    const blockedIds = blockedRows?.map((r) => r.blocked_id) || [];
+
     let query = supabaseAdmin
       .from('posts')
       .select(`
@@ -32,6 +41,10 @@ export async function GET(request: NextRequest) {
       .eq('is_hidden', false)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
+
+    if (blockedIds.length > 0) {
+      query = query.not('parent_id', 'in', `(${blockedIds.join(',')})`);
+    }
 
     if (postType && postType !== 'all') {
       query = query.eq('post_type', postType);
@@ -88,6 +101,12 @@ export async function POST(request: NextRequest) {
 
   if (!content || content.trim().length === 0) {
     return NextResponse.json({ error: 'El contenido es requerido' }, { status: 400 });
+  }
+
+  // Content moderation filter
+  const filterResult = filterContent(content);
+  if (!filterResult.isClean) {
+    return NextResponse.json({ error: filterResult.reason }, { status: 400 });
   }
 
   try {

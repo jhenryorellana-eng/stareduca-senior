@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { getAuthFromRequest, unauthorizedResponse } from '@/lib/auth';
 import { sendIndividualPush } from '@/lib/push-notifications';
+import { filterContent } from '@/lib/content-filter';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -70,6 +71,12 @@ export async function POST(
 
   if (!content || content.trim().length === 0) {
     return NextResponse.json({ error: 'El contenido es requerido' }, { status: 400 });
+  }
+
+  // Content moderation filter
+  const filterResult = filterContent(content);
+  if (!filterResult.isClean) {
+    return NextResponse.json({ error: filterResult.reason }, { status: 400 });
   }
 
   try {

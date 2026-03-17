@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Avatar } from '@/components/ui';
-import { Heart, MessageCircle, Lightbulb, HelpCircle, MessageSquare, MoreHorizontal, Trash2 } from 'lucide-react';
+import { Heart, MessageCircle, Lightbulb, HelpCircle, MessageSquare, MoreHorizontal, Trash2, Flag, Ban } from 'lucide-react';
 import { formatRelativeTime, cn } from '@/lib/utils';
 import type { Post } from '@/types';
 
@@ -12,6 +12,8 @@ interface PostCardProps {
   onReaction: (postId: string) => void;
   onComment: (postId: string) => void;
   onDelete?: (postId: string) => void;
+  onReport?: (postId: string) => void;
+  onBlock?: (userId: string) => void;
 }
 
 const postTypeConfig = {
@@ -38,7 +40,7 @@ const postTypeConfig = {
   },
 };
 
-export function PostCard({ post, currentUserId, onReaction, onComment, onDelete }: PostCardProps) {
+export function PostCard({ post, currentUserId, onReaction, onComment, onDelete, onReport, onBlock }: PostCardProps) {
   const [showMenu, setShowMenu] = useState(false);
   const config = postTypeConfig[post.postType] || postTypeConfig.experience;
   const TypeIcon = config.icon;
@@ -75,7 +77,7 @@ export function PostCard({ post, currentUserId, onReaction, onComment, onDelete 
                 <TypeIcon className={cn('w-3 h-3', config.iconColor)} />
                 {config.label}
               </span>
-              {isOwner && (
+              {currentUserId && (
                 <div className="relative">
                   <button
                     onClick={() => setShowMenu(!showMenu)}
@@ -89,14 +91,39 @@ export function PostCard({ post, currentUserId, onReaction, onComment, onDelete 
                         className="fixed inset-0 z-10"
                         onClick={() => setShowMenu(false)}
                       />
-                      <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border py-1 z-20 min-w-[120px]">
-                        <button
-                          onClick={handleDelete}
-                          className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          Eliminar
-                        </button>
+                      <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border py-1 z-20 min-w-[160px]">
+                        {isOwner ? (
+                          <button
+                            onClick={handleDelete}
+                            className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Eliminar
+                          </button>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => {
+                                setShowMenu(false);
+                                onReport?.(post.id);
+                              }}
+                              className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                            >
+                              <Flag className="w-4 h-4" />
+                              Reportar
+                            </button>
+                            <button
+                              onClick={() => {
+                                setShowMenu(false);
+                                if (post.author?.id) onBlock?.(post.author.id);
+                              }}
+                              className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                            >
+                              <Ban className="w-4 h-4" />
+                              Bloquear usuario
+                            </button>
+                          </>
+                        )}
                       </div>
                     </>
                   )}
